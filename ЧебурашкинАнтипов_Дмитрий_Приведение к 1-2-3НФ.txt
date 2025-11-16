@@ -1,15 +1,24 @@
 1НФ: Исходные таблицы уже находятся в 1 НФ, т.к. каждое поле содержит одно значение, нет массивов и все значения атомарные.
 
 2НФ: Каждый неключевой атрибут должен зависеть от всего первичного ключа.
-Но job_industry_category не зависит напрямую от customer_id, а через job_title.
-Поэтому выделяют отдельную таблицу jobs, на которую ссылаемся по job_id.
 
-Поля postcode, state, country зависят друг от друга - их выделяем в отдельную сущность addresses, на которую уже ссылаемся из customer по address_id
+Поле job_industry_category зависит от job_title, но не от customer_id.
+Функциональная зависимость: customer_id -> job_title -> job_industry_category 
+(транзитивная зависимость, нарушает 2НФ). Поэтому выделяем отдельную таблицу jobs, на которую ссылаемся по job_id.
 
-Аналогично характеристики продукта brand, line, class, size, prices выделяем в отдельную сущность products, на которую ссылаемся из transactions по product_id
+Поля postcode, state, country образуют логическую группу - зависит друг от друга, но не от customer_id.
+Функциональная зависимость: customer_id -> address, но в свою очередь address -> postcode -> state -> country.
+Для исправления выделяем отдельную сущность addresses, на которую уже ссылаемся из customer по address_id
+
+Аналогичное нарушение 2НФ в таблице transactions: поля brand, product_line, product_class, 
+product_size, list_price, standard_cost зависят от product_id, но не от transaction_id.
+Функциональная зависимость: transaction_id -> product_id -> все атрибуты продукта.
+Это означает, что все характеристики конкретного продукта повторяются в каждой транзакции 
+этого товара.
+Решение: выделить отдельную таблицу products, и справочники (brands, product_lines, 
+product_classes, product_sizes), чтобы информация о продукте хранилась один раз.
+
+Дополнительно выделены таблицы gender, wealth_segments, brands, product_lines, product_classes, product_sizes и order_statuses для исключения дублирования справочных значений и обеспечения целостности данных.
 
 3НФ: Не должно быть транзитивных зависимостей между неключевыми атрибутами
 После приведения к 2НФ таблицы уже соответствуют 3НФ
-
-
-
